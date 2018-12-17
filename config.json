@@ -1,0 +1,12 @@
+{
+  "focusRegions": ["us-east-2", "us-east-1"],
+  "shutManagementDown": true,
+  "shutdownKey": "nightShutdown",
+  "scriptHost": "ncct-management",
+  "environment": "dev",
+  "environmentDetails": {
+       "asgAction": "terminateStack",
+       "suspendAsgTag": "suspendAsg"
+
+  }
+}
