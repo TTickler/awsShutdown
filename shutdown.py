@@ -31,6 +31,12 @@ class Shutdown():
     def shutdownEc2(self, instanceId, region):
         return json.loads(subprocess.check_output('aws ec2 stop-instances --instance-ids {} --region {}'.format(instanceId, region), shell=True))
 
+    def suspendAsg(self, asgGroupName):
+        return json.loads(subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {}').format(asgGroupName), shell=True)
+
+    def terminateStack(self, stackName):
+        return json.loads(subprocess.check_output('aws cloudformation delete-stack --stack-name {}').format(stackName), shell=True)
+
     def checkTagExists(self, tags, key, value):
         try:
             return tags[key] == value
@@ -69,6 +75,13 @@ class Shutdown():
                 raise
                 #print("None iterable item skipped. No key \"tags\"")
 
+        elif resourceType == "STACK":
+            try:
+                for tag in resource['tags']:
+                    if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
+
+
+
         if resourceType == "RDS":
             self.shutdownRds(resource["Name"], region)
 
@@ -88,12 +101,6 @@ class Shutdown():
                 "Management server is not running or tags for management server is not correct. If this is running on the management "
                 "AMI, the tags are incorrect.")
 
-
-#class TestEnvironment():
- #   def __init__(self, config):
-  #      self.test = 5
-
-   # def run(self):
 
 class Environment():
     def __init__(self):
@@ -118,16 +125,21 @@ class Environment():
     def config(self, config):
         self.__config = config
 
-    def setAsgAction(self):
+    @property
+    def asgAction(self):
+        return self.__asgAction
+
+    @asgAction.setter
+    def asgAction(self, asgAction):
+        self.__asgAction = asgAction
 
 
 
 class DevEnvironment():
-    def __init__(self awsSdk):
+    def __init__(self, config,awsSdk):
         self.test = 5
         self.__awsSdk = awsSdk
         self.__config = config
-
         self.__shutdown = Shutdown()
 
     def run(self):
@@ -147,6 +159,14 @@ class DevEnvironment():
         if managementInfo is not None and self.__config['shutManagementDown'] == True:
             self.__shutdown.shutdownManagement(managementInfo['managementInstanceId'], managementInfo['managementAmiRegion'])
 
+
+#class TestEnvironment():
+ #   def __init__(self, config):
+  #      self.test = 5
+
+   # def run(self):
+
+
 if __name__ == "__main__":
 
     allowedTestEnvironments = ['test']
@@ -160,6 +180,8 @@ if __name__ == "__main__":
     awsSdk.regionList = shutdown.config['focusRegions']
     module = importlib.import_module("shutdown")
 
+    shutdown.environment = environment
+
     if environment in allowedDevEnvironments:
         class_name = "DevEnvironment"
 
@@ -169,6 +191,10 @@ if __name__ == "__main__":
     environmentClass = getattr(module, class_name, awsSdk)
 
     instance = environmentClass(config, awsSdk)
+
+
+    instance.scriptHost = shutdown.config['scriptHost']
+
     instance.run()
 
 

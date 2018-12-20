@@ -1,4 +1,4 @@
-import os
+import os, sys
 import json
 import pprint
 import subprocess
@@ -70,6 +70,17 @@ class awsManager():
         else:
             return json.loads(subprocess.check_output(("aws ec2 describe-instances --region {}--instance-id {}").format(region, instanceId), shell=True))
 
+    def listStacks(self, region):
+        return json.loads(subprocess.check_output(("aws cloudformation list-stacks --region {}").format(region), shell=True))
+
+
+    def describeStacks(self, region, stackName=None):
+
+        if stackName is None:
+            return json.loads(subprocess.check_output(("aws cloudformation describe-stacks --region {}").format(region), shell=True))
+
+        else:
+            return json.loads(subprocess.check_output(("aws cloudformation describe-stacks --stack-name {} --region {}").format(stackName, region), shell=True))
 
     def getAllElbs(self):
     
@@ -121,14 +132,16 @@ class awsManager():
 
         return tags
 
+
     def getActiveResourcesNamesByRegion(self, region):
 
-        resources = {'RDS': [], 'EC2': [], 'ELB': []}
+        resources = {'RDS': [], 'EC2': [], 'ELB': [], 'STACKS': []}
         tempResources = {}
 
         tempResources['RDS'] = self.getActiveRDS(region)
         tempResources['EC2'] = self.getActiveEc2(region)
         tempResources['ELB'] = self.getElbsByRegion(region)
+        tempResources['STACKS'] = self.getStacksByRegion(region)
 
         if tempResources['RDS']:
             for instance in tempResources['RDS']:
@@ -154,6 +167,9 @@ class awsManager():
                 tempELB['tags'] = self.getElbTagsByElbName(instance['LoadBalancerName'], region)
                 tempELB['Name'] = instance['LoadBalancerName']
                 resources['ELB'].append(tempELB)
+
+        #if tempResources['STACKS']:
+
 
         return resources
 
@@ -282,3 +298,61 @@ class awsManager():
             for elb in elbsDict:
                 if elbName in elbsDict:
                     return elbsDict[elbName]
+
+
+
+    def getAllCfStacksInRegion(self, stackStatusFilter="CREATE_COMPLETE"):
+
+        stacks = {}
+        pprint.pprint(self.regionList)
+        for region in self.regionList:
+            stacks[region] = {}
+            stacks[region].update(self.listStacks(region))
+
+        return stacks
+
+    def getStackTags(self, stackName, region):
+        #pprint.pprint("wat: " + str(self.describeStacks(region, stackName=stackName)))
+
+        try:
+
+            stacks = self.describeStacks(region, stackName)
+            for stack in stacks['Stacks']:
+                return stack['Tags']
+
+        except:
+            return None
+
+    def getStacks(self):
+
+        stacks = {}
+        try:
+            for region in self.regionList:
+                stacks[region] = {}
+                stacks[region].update(self.describeStacks(region))
+
+        except:
+            return None
+
+        return stacks
+
+
+    def getActiveStacksByRegion(self, region):
+
+        activeStacks = self.
+
+        for stack in
+
+
+test = awsManager()
+with open(os.getcwd() + "/config.json") as config:
+    config = json.load(config)
+
+test.regionList = config['focusRegions']
+stacks = (test.getAllCfStacksInRegion())
+#pprint.pprint(stacks)
+
+for region in stacks:
+    for stackSummary in stacks[region]:
+        for stack in stacks[region][stackSummary]:
+            pprint.pprint(test.getStackTags(stack['StackName'], "us-east-2"))
