@@ -141,7 +141,7 @@ class awsManager():
         tempResources['RDS'] = self.getActiveRDS(region)
         tempResources['EC2'] = self.getActiveEc2(region)
         tempResources['ELB'] = self.getElbsByRegion(region)
-        tempResources['STACKS'] = self.getStacksByRegion(region)
+        tempResources['STACKS'] = self.getActiveStacksByRegion(region)
 
         if tempResources['RDS']:
             for instance in tempResources['RDS']:
@@ -168,7 +168,12 @@ class awsManager():
                 tempELB['Name'] = instance['LoadBalancerName']
                 resources['ELB'].append(tempELB)
 
-        #if tempResources['STACKS']:
+        if tempResources['STACKS']:
+            for stack in tempResources['STACKS']:
+                tempStacks = {}
+                tempStacks['Name'] = stack['StackName']
+                tempStacks['tags'] = self.getStackTags(stack['StackName'], region)
+                resources['STACKS'].append(tempStacks)
 
 
         return resources
@@ -339,20 +344,28 @@ class awsManager():
 
     def getActiveStacksByRegion(self, region):
 
-        activeStacks = self.
+        stacks = self.describeStacks(region)
+        activeStacks = []
 
-        for stack in
+        for stack in stacks['Stacks']:
+            if stack['StackStatus'] == "CREATE_COMPLETE":
+                activeStacks.append(stack)
+
+        return activeStacks
 
 
-test = awsManager()
-with open(os.getcwd() + "/config.json") as config:
-    config = json.load(config)
+#test = awsManager()
+#with open(os.getcwd() + "/config.json") as config:
+ #   config = json.load(config)
 
-test.regionList = config['focusRegions']
-stacks = (test.getAllCfStacksInRegion())
+#test.regionList = config['focusRegions']
+#stacks = (test.getAllCfStacksInRegion())
 #pprint.pprint(stacks)
 
-for region in stacks:
-    for stackSummary in stacks[region]:
-        for stack in stacks[region][stackSummary]:
-            pprint.pprint(test.getStackTags(stack['StackName'], "us-east-2"))
+#pprint.pprint(test.getAllActiveResourcesNames())
+
+#for region in stacks:
+ #   for stackSummary in stacks[region]:
+  #      for stack in stacks[region][stackSummary]:
+   #         pprint.pprint(test.getStackTags(stack['StackName'], "us-east-2"))
+

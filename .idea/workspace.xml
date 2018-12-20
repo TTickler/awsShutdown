@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="569bf827-13c7-4c6d-a682-20464c4ad7cb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/awsSdk.py" beforeDir="false" afterPath="$PROJECT_DIR$/awsSdk.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/shutdown.py" beforeDir="false" afterPath="$PROJECT_DIR$/shutdown.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -38,32 +38,33 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="json" value="234" />
-          <entry key="py" value="7772" />
+          <entry key="py" value="8526" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="JSON" value="234" />
-          <entry key="Python" value="7772" />
+          <entry key="Python" value="8526" />
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/shutdown.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1440">
-              <caret line="198" lean-forward="true" selection-start-line="198" selection-end-line="198" />
+            <state relative-caret-position="-1470">
+              <caret line="40" column="55" lean-forward="true" selection-start-line="40" selection-start-column="55" selection-end-line="40" selection-end-column="55" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
-                <marker date="1545322477675" expanded="true" signature="154:159" ph="..." />
-                <marker date="1545322477675" expanded="true" signature="178:564" ph="..." />
-                <marker date="1545322477675" expanded="true" signature="453:564" ph="..." />
-                <marker date="1545322477675" expanded="true" signature="606:836" ph="..." />
-                <marker date="1545322477675" expanded="true" signature="1257:1395" ph="..." />
-                <marker date="1545322477675" expanded="true" signature="4140:4177" ph="..." />
+                <marker date="1545342983220" expanded="true" signature="154:159" ph="..." />
+                <marker date="1545342983220" expanded="true" signature="178:564" ph="..." />
+                <marker date="1545342983220" expanded="true" signature="453:564" ph="..." />
+                <marker date="1545342983220" expanded="true" signature="606:836" ph="..." />
+                <marker date="1545342983220" expanded="true" signature="1278:1283" ph="..." />
+                <marker date="1545342983220" expanded="true" signature="1278:1502" ph="..." />
+                <marker date="1545342983220" expanded="true" signature="4251:4288" ph="..." />
               </folding>
             </state>
           </provider>
@@ -81,24 +82,24 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
+            <state relative-caret-position="105">
+              <caret line="7" column="30" selection-start-line="7" selection-start-column="30" selection-end-line="7" selection-end-column="30" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/awsSdk.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="540">
-              <caret line="167" column="38" lean-forward="true" selection-start-line="167" selection-start-column="38" selection-end-line="167" selection-end-column="38" />
+            <state relative-caret-position="249">
+              <caret line="348" lean-forward="true" selection-start-line="348" selection-end-line="348" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
-                <marker date="1545339591913" expanded="true" signature="3002:3135" ph="..." />
-                <marker date="1545339591913" expanded="true" signature="3215:3531" ph="..." />
-                <marker date="1545339591913" expanded="true" signature="3525:3526" ph="..." />
-                <marker date="1545339591913" expanded="true" signature="4821:4827" ph="..." />
-                <marker date="1545339591913" expanded="true" signature="9975:10194" ph="..." />
+                <marker date="1545342244854" expanded="true" signature="3002:3135" ph="..." />
+                <marker date="1545342244854" expanded="true" signature="3215:3531" ph="..." />
+                <marker date="1545342244854" expanded="true" signature="3525:3526" ph="..." />
+                <marker date="1545342244854" expanded="true" signature="4821:4827" ph="..." />
+                <marker date="1545342244854" expanded="true" signature="10256:10475" ph="..." />
               </folding>
             </state>
           </provider>
@@ -120,9 +121,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/testMatcher.py" />
+        <option value="$PROJECT_DIR$/awsSdk.py" />
         <option value="$PROJECT_DIR$/config.json" />
         <option value="$PROJECT_DIR$/shutdown.py" />
-        <option value="$PROJECT_DIR$/awsSdk.py" />
       </list>
     </option>
   </component>
@@ -165,7 +166,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.awsSdk">
+  <component name="RunManager" selected="Python.shutdown">
     <configuration name="awsSdk" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="shutdown" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -236,8 +237,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.awsSdk" />
         <item itemvalue="Python.shutdown" />
+        <item itemvalue="Python.awsSdk" />
         <item itemvalue="Python.testMatcher" />
       </list>
     </recent_temporary>
@@ -259,12 +260,12 @@
     <frame x="0" y="0" width="1890" height="1045" extended-state="4" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49853802" visible="true" weight="0.24879615" />
-      <window_info id="Structure" order="1" sideWeight="0.501462" side_tool="true" visible="true" weight="0.24879615" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49921995" visible="true" weight="0.24879615" />
+      <window_info id="Structure" order="1" sideWeight="0.50078005" side_tool="true" visible="true" weight="0.24879615" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.25893825" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.30552545" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39957035" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -286,7 +287,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/shutdown.py</url>
-          <line>102</line>
+          <line>104</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
@@ -300,40 +301,41 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/shutdown.py">
+    <entry file="file://$PROJECT_DIR$/awsSdk.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1440">
-          <caret line="198" lean-forward="true" selection-start-line="198" selection-end-line="198" />
+        <state relative-caret-position="249">
+          <caret line="348" lean-forward="true" selection-start-line="348" selection-end-line="348" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
-            <marker date="1545322477675" expanded="true" signature="154:159" ph="..." />
-            <marker date="1545322477675" expanded="true" signature="178:564" ph="..." />
-            <marker date="1545322477675" expanded="true" signature="453:564" ph="..." />
-            <marker date="1545322477675" expanded="true" signature="606:836" ph="..." />
-            <marker date="1545322477675" expanded="true" signature="1257:1395" ph="..." />
-            <marker date="1545322477675" expanded="true" signature="4140:4177" ph="..." />
+            <element signature="e#0#14#0" expanded="true" />
+            <marker date="1545342244854" expanded="true" signature="3002:3135" ph="..." />
+            <marker date="1545342244854" expanded="true" signature="3215:3531" ph="..." />
+            <marker date="1545342244854" expanded="true" signature="3525:3526" ph="..." />
+            <marker date="1545342244854" expanded="true" signature="4821:4827" ph="..." />
+            <marker date="1545342244854" expanded="true" signature="10256:10475" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/config.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="22" selection-start-line="4" selection-start-column="22" selection-end-line="4" selection-end-column="22" />
+        <state relative-caret-position="105">
+          <caret line="7" column="30" selection-start-line="7" selection-start-column="30" selection-end-line="7" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/awsSdk.py">
+    <entry file="file://$PROJECT_DIR$/shutdown.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
-          <caret line="167" column="38" lean-forward="true" selection-start-line="167" selection-start-column="38" selection-end-line="167" selection-end-column="38" />
+        <state relative-caret-position="-1470">
+          <caret line="40" column="55" lean-forward="true" selection-start-line="40" selection-start-column="55" selection-end-line="40" selection-end-column="55" />
           <folding>
-            <element signature="e#0#14#0" expanded="true" />
-            <marker date="1545339591913" expanded="true" signature="3002:3135" ph="..." />
-            <marker date="1545339591913" expanded="true" signature="3215:3531" ph="..." />
-            <marker date="1545339591913" expanded="true" signature="3525:3526" ph="..." />
-            <marker date="1545339591913" expanded="true" signature="4821:4827" ph="..." />
-            <marker date="1545339591913" expanded="true" signature="9975:10194" ph="..." />
+            <element signature="e#0#11#0" expanded="true" />
+            <marker date="1545342983220" expanded="true" signature="154:159" ph="..." />
+            <marker date="1545342983220" expanded="true" signature="178:564" ph="..." />
+            <marker date="1545342983220" expanded="true" signature="453:564" ph="..." />
+            <marker date="1545342983220" expanded="true" signature="606:836" ph="..." />
+            <marker date="1545342983220" expanded="true" signature="1278:1283" ph="..." />
+            <marker date="1545342983220" expanded="true" signature="1278:1502" ph="..." />
+            <marker date="1545342983220" expanded="true" signature="4251:4288" ph="..." />
           </folding>
         </state>
       </provider>

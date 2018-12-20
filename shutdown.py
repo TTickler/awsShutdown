@@ -32,11 +32,13 @@ class Shutdown():
         return json.loads(subprocess.check_output('aws ec2 stop-instances --instance-ids {} --region {}'.format(instanceId, region), shell=True))
 
     def suspendAsg(self, asgGroupName):
-        return json.loads(subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {}').format(asgGroupName), shell=True)
+        return json.loads(subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {}'.format(asgGroupName), shell=True))
 
-    def terminateStack(self, stackName):
-        return json.loads(subprocess.check_output('aws cloudformation delete-stack --stack-name {}').format(stackName), shell=True)
-
+    def terminateStack(self, stackName, region):
+        try:
+            subprocess.check_output('aws cloudformation delete-stack --stack-name {} --region {}'.format(stackName, region), shell=True)
+        except:
+            print("Failed to terminate stack: " + str(stackName))
     def checkTagExists(self, tags, key, value):
         try:
             return tags[key] == value
@@ -75,10 +77,10 @@ class Shutdown():
                 raise
                 #print("None iterable item skipped. No key \"tags\"")
 
-        elif resourceType == "STACK":
-            try:
-                for tag in resource['tags']:
-                    if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
+        #elif resourceType == "STACK":
+         #   try:
+          #      for tag in resource['tags']:
+           #         if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
 
 
 
@@ -134,9 +136,10 @@ class Environment():
         self.__asgAction = asgAction
 
 
-
-class DevEnvironment():
+class DevEnvironment(Environment):
     def __init__(self, config,awsSdk):
+
+        Environment.__init__(self)
         self.test = 5
         self.__awsSdk = awsSdk
         self.__config = config
@@ -147,7 +150,13 @@ class DevEnvironment():
 
         managementInfo = None
 
+        Environment.asgAction = self.__shutdown.config['environmentDetails']['asgAction']
+
         for region in activeResources:
+            if Environment.asgAction == 'terminate':
+                for resource in activeResources[region]['STACKS']:
+                    self.__shutdown.terminateStack(resource['Name'], region)
+
             for resourceType in activeResources[region]:
                 for resource in activeResources[region][resourceType]:
                     shutdownOutput = self.__shutdown.shutdown(resource, resourceType, region)
