@@ -178,6 +178,9 @@ class DevEnvironment(Environment):
 
 if __name__ == "__main__":
 
+
+    '''List of allowed environments. These are strings that 
+        correlate to either the Test or Dev environment.'''
     allowedTestEnvironments = ['test']
     allowedDevEnvironments = ['dev', 'development']
 
@@ -197,12 +200,16 @@ if __name__ == "__main__":
     elif environment in allowedTestEnvironments:
         class_name = "TestEnvironment"
 
+    #creates object of either DevEnvironment or TestEnvironment based on configuration
     environmentClass = getattr(module, class_name, awsSdk)
 
     instance = environmentClass(config, awsSdk)
 
 
     instance.scriptHost = shutdown.config['scriptHost']
+
+    #Sets the asgAction property equal to what populates the asgAction in the shutdown configuration
+    instance.asgAction = shutdown.config['environmentDetails']['asgAction']
 
     instance.run()
 
