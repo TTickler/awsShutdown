@@ -3,6 +3,13 @@ import json
 import pprint
 import subprocess
 
+__author__ = "Colby Dozier"
+__license__ = ""
+__version__ = "1"
+__maintainer__ = "Colby Dozier"
+__email__ = "colby.dozier@caci.com"
+__status__ = "Development"
+
 class awsManager():
     def __init__(self):
         self.__region_list = []
@@ -82,6 +89,15 @@ class awsManager():
         else:
             return json.loads(subprocess.check_output(("aws cloudformation describe-stacks --stack-name {} --region {}").format(stackName, region), shell=True))
 
+
+    def queryAsg(self, region,asgNames=None):
+
+        if asgNames is None:
+            return json.loads(subprocess.check_output(("aws autoscaling describe-auto-scaling-groups --region {}").format(region), shell=True))
+
+        else:
+            return json.loads(subprocess.check_output(("aws autoscaling describe-auto-scaling-groups --auto-scaling-group-name {} --region {}").format(asgNames, region), shell=True))
+
     def getAllElbs(self):
     
         allElbsDict = {}       
@@ -135,13 +151,14 @@ class awsManager():
 
     def getActiveResourcesNamesByRegion(self, region):
 
-        resources = {'RDS': [], 'EC2': [], 'ELB': [], 'STACKS': []}
+        resources = {'RDS': [], 'EC2': [], 'ELB': [], 'STACKS': [], 'ASG': []}
         tempResources = {}
 
         tempResources['RDS'] = self.getActiveRDS(region)
         tempResources['EC2'] = self.getActiveEc2(region)
         tempResources['ELB'] = self.getElbsByRegion(region)
         tempResources['STACKS'] = self.getActiveStacksByRegion(region)
+        tempResources['ASG'] = self.getActiveAsgByRegion(region)
 
         if tempResources['RDS']:
             for instance in tempResources['RDS']:
@@ -174,6 +191,18 @@ class awsManager():
                 tempStacks['Name'] = stack['StackName']
                 tempStacks['tags'] = self.getStackTags(stack['StackName'], region)
                 resources['STACKS'].append(tempStacks)
+
+        if tempResources['ASG']:
+            for asg in tempResources['ASG']:
+                tempAsg = {}
+                try:
+                    tempAsg['tags'] = self.getAsgTags(asg['AutoScalingGroupName'], region)
+
+                except:
+                    tempAsg['tags'] = None
+
+                tempAsg['Name'] = asg['AutoScalingGroupName']
+                resources['ASG'].append(tempAsg)
 
 
         return resources
@@ -353,16 +382,41 @@ class awsManager():
 
         return activeStacks
 
+    def getActiveAsgByRegion(self, region):
 
-#test = awsManager()
-#with open(os.getcwd() + "/config.json") as config:
- #   config = json.load(config)
+        asgs = self.queryAsg(region)
+        activeAsgs = []
 
-#test.regionList = config['focusRegions']
-#stacks = (test.getAllCfStacksInRegion())
-#pprint.pprint(stacks)
+        for asg in asgs['AutoScalingGroups']:
+            activeAsgs.append(asg)
+
+        return activeAsgs
+
+    def getAsgTags(self, asgName, region):
+
+        try:
+            asgs = self.queryAsg(region, asgName)
+            for asg in asgs['AutoScalingGroups']:
+                return asg['Tags']
+
+        except:
+            return None
+
+
+test = awsManager()
+with open(os.getcwd() + "/config.json") as config:
+    config = json.load(config)
+
+test.regionList = config['focusRegions']
+stacks = (test.getAllCfStacksInRegion())
+pprint.pprint(stacks)
 
 #pprint.pprint(test.getAllActiveResourcesNames())
+
+test.getActiveAsgByRegion('us-east-1')
+
+for region in test.regionList:
+    pprint.pprint(test.getActiveResourcesNamesByRegion(region))
 
 #for region in stacks:
  #   for stackSummary in stacks[region]:

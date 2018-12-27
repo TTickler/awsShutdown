@@ -7,6 +7,15 @@ import string
 import pprint
 from difflib import SequenceMatcher
 
+
+
+__author__ = "Colby Dozier"
+__license__ = ""
+__version__ = "1"
+__maintainer__ = "Colby Dozier"
+__email__ = "colby.dozier@caci.com"
+__status__ = "Development"
+
 class Shutdown():
     def __init__(self):
 
@@ -31,8 +40,8 @@ class Shutdown():
     def shutdownEc2(self, instanceId, region):
         return json.loads(subprocess.check_output('aws ec2 stop-instances --instance-ids {} --region {}'.format(instanceId, region), shell=True))
 
-    def suspendAsg(self, asgGroupName):
-        return json.loads(subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {}'.format(asgGroupName), shell=True))
+    def suspendAsg(self, asgGroupName, region):
+        return json.loads(subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {} --region {}'.format(asgGroupName, region), shell=True))
 
     def terminateStack(self, stackName, region):
         try:
@@ -75,7 +84,6 @@ class Shutdown():
 
             except:
                 raise
-                #print("None iterable item skipped. No key \"tags\"")
 
         #elif resourceType == "STACK":
          #   try:
@@ -84,7 +92,7 @@ class Shutdown():
 
 
 
-        if resourceType == "RDS":
+        elif resourceType == "RDS":
             self.shutdownRds(resource["Name"], region)
 
         if managementAmiRegion is not None:
@@ -157,6 +165,10 @@ class DevEnvironment(Environment):
                 for resource in activeResources[region]['STACKS']:
                     self.__shutdown.terminateStack(resource['Name'], region)
 
+            elif Environment.asgAction == 'suspend':
+                for resource in activeResources[region]['ASG']:
+                    self.__shutdown.suspendAsg(resource['Name'], region)
+
             for resourceType in activeResources[region]:
                 for resource in activeResources[region][resourceType]:
                     shutdownOutput = self.__shutdown.shutdown(resource, resourceType, region)
@@ -176,6 +188,7 @@ class DevEnvironment(Environment):
    # def run(self):
 
 
+#Main method of shutdown.py
 if __name__ == "__main__":
 
 
