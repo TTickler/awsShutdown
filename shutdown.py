@@ -94,7 +94,7 @@ class Shutdown():
         elif resourceType == "ASG":
             for tag in resource['tags']:
                 if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
-                    if Environment.asgAction == 'suspend':
+                    #if Environment.asgAction == 'suspend':
                         self.suspendAsg(resource['Name'], region)
 
 
