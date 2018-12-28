@@ -403,7 +403,7 @@ class awsManager():
             return None
 
 
-test = awsManager()
+'''test = awsManager()
 with open(os.getcwd() + "/config.json") as config:
     config = json.load(config)
 
@@ -421,5 +421,5 @@ for region in test.regionList:
 #for region in stacks:
  #   for stackSummary in stacks[region]:
   #      for stack in stacks[region][stackSummary]:
-   #         pprint.pprint(test.getStackTags(stack['StackName'], "us-east-2"))
+   #         pprint.pprint(test.getStackTags(stack['StackName'], "us-east-2"))'''
 

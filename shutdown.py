@@ -7,8 +7,6 @@ import string
 import pprint
 from difflib import SequenceMatcher
 
-
-
 __author__ = "Colby Dozier"
 __license__ = ""
 __version__ = "1"
@@ -41,8 +39,10 @@ class Shutdown():
         return json.loads(subprocess.check_output('aws ec2 stop-instances --instance-ids {} --region {}'.format(instanceId, region), shell=True))
 
     def suspendAsg(self, asgGroupName, region):
-        return json.loads(subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {} --region {}'.format(asgGroupName, region), shell=True))
-
+        try:
+            subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {} --region {}'.format(asgGroupName, region), shell=True)
+        except:
+            print("Failed to suspend ASG: {} in {}".format(asgGroupName, region))
     def terminateStack(self, stackName, region):
         try:
             subprocess.check_output('aws cloudformation delete-stack --stack-name {} --region {}'.format(stackName, region), shell=True)
@@ -85,10 +85,17 @@ class Shutdown():
             except:
                 raise
 
-        #elif resourceType == "STACK":
-         #   try:
-          #      for tag in resource['tags']:
-           #         if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
+        elif resourceType == "STACKS":
+            for tag in resource['tags']:
+                if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
+                    if Environment.asgAction == 'terminate':
+                        self.terminateStack(resource['Name'], region)
+
+        elif resourceType == "ASG":
+            for tag in resource['tags']:
+                if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
+                    if Environment.asgAction == 'suspend':
+                        self.suspendAsg(resource['Name'], region)
 
 
 
@@ -111,7 +118,7 @@ class Shutdown():
                 "Management server is not running or tags for management server is not correct. If this is running on the management "
                 "AMI, the tags are incorrect.")
 
-
+''''''
 class Environment():
     def __init__(self):
         
@@ -144,6 +151,7 @@ class Environment():
         self.__asgAction = asgAction
 
 
+''''''
 class DevEnvironment(Environment):
     def __init__(self, config,awsSdk):
 
@@ -155,32 +163,24 @@ class DevEnvironment(Environment):
 
     def run(self):
         activeResources = self.__awsSdk.getAllActiveResourcesNames()
+        pprint.pprint(activeResources)
 
         managementInfo = None
 
         Environment.asgAction = self.__shutdown.config['environmentDetails']['asgAction']
 
         for region in activeResources:
-            if Environment.asgAction == 'terminate':
-                for resource in activeResources[region]['STACKS']:
-                    self.__shutdown.terminateStack(resource['Name'], region)
-
-            elif Environment.asgAction == 'suspend':
-                for resource in activeResources[region]['ASG']:
-                    self.__shutdown.suspendAsg(resource['Name'], region)
-
             for resourceType in activeResources[region]:
                 for resource in activeResources[region][resourceType]:
                     shutdownOutput = self.__shutdown.shutdown(resource, resourceType, region)
 
                     if shutdownOutput is not None:
                         managementInfo = shutdownOutput
-        pprint.pprint(self.__shutdown.names)
 
         if managementInfo is not None and self.__config['shutManagementDown'] == True:
             self.__shutdown.shutdownManagement(managementInfo['managementInstanceId'], managementInfo['managementAmiRegion'])
 
-
+''''''
 #class TestEnvironment():
  #   def __init__(self, config):
   #      self.test = 5
