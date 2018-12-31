@@ -1,5 +1,14 @@
 {
   "type": "object",
+  "required": [
+    "focusRegions",
+    "shutManagementDown",
+    "shutdownKey",
+    "scriptHost",
+    "environment",
+    "environmentDetails",
+    "logging"
+  ],
   "properties": {
     "focusRegions": {
       "type": "array",

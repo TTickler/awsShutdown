@@ -14,8 +14,19 @@ class ConfigCheck():
         with open(sys.path[0] + '/config.json') as configRaw:
             self.__config = json.load(configRaw)
 
-        with 
+        with open(sys.path[0] + '/configSchema.json') as schemaRaw:
+            self.__schema = json.load(schemaRaw)
 
 
-    def hasValidFields(self):
+    def validateConfig(self):
+        v = jsonschema.Draft4Validator(self.__schema)
+        errors = sorted(v.iter_errors(self.__config), key=lambda e: e.path)
+
+        return errors
+
+
+
+
+test = ConfigCheck()
+print(test.validateConfig())
 

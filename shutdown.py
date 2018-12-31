@@ -1,5 +1,5 @@
 import json
-import awsSdk
+import awsSdk, configCheck
 import subprocess
 import sys
 import importlib
@@ -17,8 +17,11 @@ __status__ = "Development"
 class Shutdown():
     def __init__(self):
 
-        with open(sys.path[0] + '/config.json') as configRaw:
-            self.config = json.load(configRaw)
+        try:
+            with open(sys.path[0] + '/config.json') as configRaw:
+                self.config = json.load(configRaw)
+        except:
+            raise
 
         self.__logger = logging
         self.__logger.basicConfig(filename=sys.path[0] + (self.config['logging']['localFilePath']), filemode='w', format='%(name)s - %(levelname)s - %(message)s')
@@ -101,7 +104,7 @@ class Shutdown():
         elif resourceType == "STACKS":
             for tag in resource['tags']:
                 if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
-                    if Environment.asgAction == 'terminate':
+                    if Environment.stackAction == 'terminate':
                         self.terminateStack(resource['Name'], region)
 
         elif resourceType == "ASG":
@@ -136,7 +139,7 @@ class Environment():
     def __init__(self):
         
         self.__scriptHost = None
-        self.__asgAction = None
+        self.__stackAction = None
         self.__config = None
 
     @property
@@ -156,12 +159,12 @@ class Environment():
         self.__config = config
 
     @property
-    def asgAction(self):
-        return self.__asgAction
+    def stackAction(self):
+        return self.__stackAction
 
-    @asgAction.setter
-    def asgAction(self, asgAction):
-        self.__asgAction = asgAction
+    @stackAction.setter
+    def stackAction(self, stackAction):
+        self.__stackAction = stackAction
 
 
 ''''''
@@ -176,7 +179,6 @@ class DevEnvironment(Environment):
 
     def run(self):
         activeResources = self.__awsSdk.getAllActiveResourcesNames()
-        pprint.pprint(activeResources)
 
         managementInfo = None
 
@@ -213,6 +215,8 @@ if __name__ == "__main__":
     shutdown = Shutdown()
     awsSdk = awsSdk.awsManager()
     config = shutdown.config
+
+
     environment = string.lower(shutdown.config['environment'])
 
     awsSdk.regionList = shutdown.config['focusRegions']

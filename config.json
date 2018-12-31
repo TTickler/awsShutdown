@@ -5,7 +5,7 @@
   "scriptHost": "ncct-management",
   "environment": "dev",
   "environmentDetails": {
-       "asgAction": "terminate",
+       "stackAction": "terminate",
        "suspendAsgTag": "suspendAsg"
 
   },
