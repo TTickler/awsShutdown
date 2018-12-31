@@ -8,5 +8,9 @@
        "asgAction": "terminate",
        "suspendAsgTag": "suspendAsg"
 
+  },
+  "logging":{
+    "localFilePath": "/logs/shutdown_log.log"
+
   }
 }

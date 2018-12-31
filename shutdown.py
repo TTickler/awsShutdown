@@ -5,7 +5,7 @@ import sys
 import importlib
 import string
 import pprint
-from difflib import SequenceMatcher
+import logging
 
 __author__ = "Colby Dozier"
 __license__ = ""
@@ -20,6 +20,9 @@ class Shutdown():
         with open(sys.path[0] + '/config.json') as configRaw:
             self.config = json.load(configRaw)
 
+        self.__logger = logging
+        self.__logger.basicConfig(filename=sys.path[0] + (self.config['logging']['localFilePath']), filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
         self.names = []
 
     @property
@@ -32,26 +35,36 @@ class Shutdown():
 
     '''Function to leverage AWS CLI to shut down RDS instance'''
     def shutdownRds(self, instanceId, region):
-        return json.loads(subprocess.check_output('aws rds stop-db-instance --db-instance-identifier {} --region {}'.format(instanceId, region), shell=True))
+
+        try:
+            return json.loads(subprocess.check_output('aws rds stop-db-instance --db-instance-identifier {} --region {}'.format(instanceId, region), shell=True))
+        except:
+            self.__logger.error('Failed to shutdown RDS instance: {} in region: {}'.format(instanceId, region))
 
     '''Function to leverage AWS CLI to shut down EC2 instances'''
     def shutdownEc2(self, instanceId, region):
-        return json.loads(subprocess.check_output('aws ec2 stop-instances --instance-ids {} --region {}'.format(instanceId, region), shell=True))
+
+        try:
+            return json.loads(subprocess.check_output('aws ec2 stop-instances --instance-ids {} --region {}'.format(instanceId, region), shell=True))
+        except:
+            self.__logger.error('Failed to shutdown EC2 instance: {} in region: {}'.format(instanceId, region))
 
     def suspendAsg(self, asgGroupName, region):
         try:
             subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {} --region {}'.format(asgGroupName, region), shell=True)
         except:
-            print("Failed to suspend ASG: {} in {}".format(asgGroupName, region))
+            self.__logger.error("Failed to suspend ASG: {} in {}".format(asgGroupName, region))
     def terminateStack(self, stackName, region):
         try:
             subprocess.check_output('aws cloudformation delete-stack --stack-name {} --region {}'.format(stackName, region), shell=True)
         except:
-            print("Failed to terminate stack: " + str(stackName))
+            self.__logger.error("Failed to terminate stack: {} in region: {}".format(stackName, region))
+
     def checkTagExists(self, tags, key, value):
         try:
             return tags[key] == value
         except KeyError:
+            self.__logger.error("Key: {} value: {} does not exist".format(key, value))
             return False
 
     def updateNamedInstances(self, name):
@@ -167,7 +180,7 @@ class DevEnvironment(Environment):
 
         managementInfo = None
 
-        Environment.asgAction = self.__shutdown.config['environmentDetails']['asgAction']
+        Environment.stackAction = self.__shutdown.config['environmentDetails']['stackAction']
 
         for region in activeResources:
             for resourceType in activeResources[region]:
@@ -222,7 +235,7 @@ if __name__ == "__main__":
     instance.scriptHost = shutdown.config['scriptHost']
 
     #Sets the asgAction property equal to what populates the asgAction in the shutdown configuration
-    instance.asgAction = shutdown.config['environmentDetails']['asgAction']
+    instance.stackAction = shutdown.config['environmentDetails']['stackAction']
 
     instance.run()
 

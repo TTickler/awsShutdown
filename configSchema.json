@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "properties": {
+    "focusRegions": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "shutdownKey": {"type": "string"},
+    "scriptHost": {"type": "string"},
+    "environment": {
+      "type": "string",
+      "enum": ["dev", "test", "development"]
+    },
+    "environmentDetails": {
+      "type": "object",
+      "properties": {
+        "stackAction": {
+          "type": "string",
+          "enum": ["suspend", "terminate"],
+          "description": "Suspension of environment or termination of stacks"
+        },
+        "suspendAsgTag": {"type": "string"}
+      }
+    },
+    "logging": {
+      "type": "object",
+      "properties": {
+        "localFilePath": {"type": "string"}
+      }
+    }
+  }
+}
