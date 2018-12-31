@@ -24,9 +24,3 @@ class ConfigCheck():
 
         return errors
 
-
-
-
-test = ConfigCheck()
-print(test.validateConfig())
-

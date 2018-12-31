@@ -17,14 +17,15 @@ __status__ = "Development"
 class Shutdown():
     def __init__(self):
 
+        self.logger = logging
+        self.logger.basicConfig(filename=sys.path[0] + "/logs/shutdown_log.log", filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+
         try:
             with open(sys.path[0] + '/config.json') as configRaw:
                 self.config = json.load(configRaw)
         except:
+            self.logger.error("config.json could not be parsed")
             raise
-
-        self.__logger = logging
-        self.__logger.basicConfig(filename=sys.path[0] + (self.config['logging']['localFilePath']), filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
         self.names = []
 
@@ -42,7 +43,7 @@ class Shutdown():
         try:
             return json.loads(subprocess.check_output('aws rds stop-db-instance --db-instance-identifier {} --region {}'.format(instanceId, region), shell=True))
         except:
-            self.__logger.error('Failed to shutdown RDS instance: {} in region: {}'.format(instanceId, region))
+            self.logger.error('Failed to shutdown RDS instance: {} in region: {}'.format(instanceId, region))
 
     '''Function to leverage AWS CLI to shut down EC2 instances'''
     def shutdownEc2(self, instanceId, region):
@@ -50,24 +51,24 @@ class Shutdown():
         try:
             return json.loads(subprocess.check_output('aws ec2 stop-instances --instance-ids {} --region {}'.format(instanceId, region), shell=True))
         except:
-            self.__logger.error('Failed to shutdown EC2 instance: {} in region: {}'.format(instanceId, region))
+            self.logger.error('Failed to shutdown EC2 instance: {} in region: {}'.format(instanceId, region))
 
     def suspendAsg(self, asgGroupName, region):
         try:
             subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {} --region {}'.format(asgGroupName, region), shell=True)
         except:
-            self.__logger.error("Failed to suspend ASG: {} in {}".format(asgGroupName, region))
+            self.logger.error("Failed to suspend ASG: {} in {}".format(asgGroupName, region))
     def terminateStack(self, stackName, region):
         try:
             subprocess.check_output('aws cloudformation delete-stack --stack-name {} --region {}'.format(stackName, region), shell=True)
         except:
-            self.__logger.error("Failed to terminate stack: {} in region: {}".format(stackName, region))
+            self.logger.error("Failed to terminate stack: {} in region: {}".format(stackName, region))
 
     def checkTagExists(self, tags, key, value):
         try:
             return tags[key] == value
         except KeyError:
-            self.__logger.error("Key: {} value: {} does not exist".format(key, value))
+            self.logger.error("Key: {} value: {} does not exist".format(key, value))
             return False
 
     def updateNamedInstances(self, name):
@@ -110,7 +111,6 @@ class Shutdown():
         elif resourceType == "ASG":
             for tag in resource['tags']:
                 if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
-                    #if Environment.asgAction == 'suspend':
                         self.suspendAsg(resource['Name'], region)
 
 
@@ -130,8 +130,7 @@ class Shutdown():
             shutdown.shutdownEc2(managementInstanceId, managementAmiRegion)
 
         except:
-            print(
-                "Management server is not running or tags for management server is not correct. If this is running on the management "
+            self.logger.warning("Management server is not running or tags for management server is not correct. If this is running on the management "
                 "AMI, the tags are incorrect.")
 
 ''''''
@@ -212,9 +211,19 @@ if __name__ == "__main__":
     allowedTestEnvironments = ['test']
     allowedDevEnvironments = ['dev', 'development']
 
+    configCheck = configCheck.ConfigCheck()
     shutdown = Shutdown()
     awsSdk = awsSdk.awsManager()
     config = shutdown.config
+
+    #validate if config.json matches required schema
+
+    config_errors = configCheck.validateConfig()
+
+    #if config_errors is non-empty
+    if config_errors:
+        shutdown.logger.error("config.json could not be validated. {}".format(config_errors))
+        sys.exit("Configuration does not match schema. Check logs for more.")
 
 
     environment = string.lower(shutdown.config['environment'])
