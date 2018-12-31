@@ -4,7 +4,7 @@ import subprocess
 import sys
 import importlib
 import string
-import pprint
+import platform
 import logging
 
 __author__ = "Colby Dozier"
@@ -14,20 +14,36 @@ __maintainer__ = "Colby Dozier"
 __email__ = "colby.dozier@caci.com"
 __status__ = "Development"
 
+'''Shutdown class with functionality to shutdown, or suspend, AWS resources'''
 class Shutdown():
     def __init__(self):
 
+        currPlatform = platform.system()
         self.logger = logging
-        self.logger.basicConfig(filename=sys.path[0] + "/logs/shutdown_log.log", filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        self.logger.basicConfig(filename=sys.path[0] + self.getLogPath(currPlatform), filemode='a', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
         try:
-            with open(sys.path[0] + '/config.json') as configRaw:
+            with open(sys.path[0] + self.getConfigPath(currPlatform)) as configRaw:
                 self.config = json.load(configRaw)
         except:
             self.logger.error("config.json could not be parsed")
             raise
 
         self.names = []
+
+    def getConfigPath(self, currPlatform):
+
+        if currPlatform == 'Windows':
+            return "\\config.json"
+        elif currPlatform == 'Linux':
+            return "/config.json"
+
+    def getLogPath(self, currPlatform):
+
+        if currPlatform == 'Windows':
+            return "\\logs\\shutdown_log.log"
+        elif currPlatform == 'Linux':
+            return "/logs/shutdown_log.log"
 
     @property
     def environment(self):

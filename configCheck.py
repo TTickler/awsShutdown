@@ -1,6 +1,7 @@
 import json
 import sys
 import jsonschema
+import platform
 
 __author__ = "Colby Dozier"
 __license__ = ""
@@ -11,11 +12,28 @@ __status__ = "Development"
 
 class ConfigCheck():
     def __init__(self):
-        with open(sys.path[0] + '/config.json') as configRaw:
+
+        currPlatform = platform.system()
+
+        with open(sys.path[0] + self.getConfigPath(currPlatform)) as configRaw:
             self.__config = json.load(configRaw)
 
-        with open(sys.path[0] + '/configSchema.json') as schemaRaw:
+        with open(sys.path[0] + self.getConfigSchemaPath(currPlatform)) as schemaRaw:
             self.__schema = json.load(schemaRaw)
+
+    def getConfigPath(self, currPlatform):
+
+        if currPlatform == 'Windows':
+            return "\\config.json"
+        elif currPlatform == 'Linux':
+            return "/config.json"
+
+    def getConfigSchemaPath(self, currPlatform):
+
+        if currPlatform == 'Windows':
+            return "\\configSchema.json"
+        elif currPlatform == 'Linux':
+            return "/configSchema.json"
 
 
     def validateConfig(self):

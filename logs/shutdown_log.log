@@ -1,0 +1,3 @@
+2018-12-31 17:29:03,193 - root - ERROR - config.json could not be validated. [<ValidationError: "u'scriptHost' is a required property">]
+2018-12-31 17:30:53,494 - root - ERROR - config.json could not be validated. [<ValidationError: "u'scriptHost' is a required property">]
+2018-12-31 17:30:54,629 - root - ERROR - config.json could not be validated. [<ValidationError: "u'scriptHost' is a required property">]
