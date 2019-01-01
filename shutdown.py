@@ -33,12 +33,18 @@ class Shutdown():
 
     def getConfigPath(self, currPlatform):
 
+        '''Returns valid section of the configuration's path based
+            on whether the current platform is Linux or Windows'''
+
         if currPlatform == 'Windows':
             return "\\config.json"
         elif currPlatform == 'Linux':
             return "/config.json"
 
     def getLogPath(self, currPlatform):
+
+        '''Returns valid section of logs's path based
+            on whether the current platform is Linux or Windows'''
 
         if currPlatform == 'Windows':
             return "\\logs\\shutdown_log.log"
@@ -53,28 +59,39 @@ class Shutdown():
     def environment(self, environment):
         self._environment = environment
 
-    '''Function to leverage AWS CLI to shut down RDS instance'''
     def shutdownRds(self, instanceId, region):
 
+        '''Function to leverage AWS CLI to shut down RDS instance'''
+
         try:
-            return json.loads(subprocess.check_output('aws rds stop-db-instance --db-instance-identifier {} --region {}'.format(instanceId, region), shell=True))
+            subprocess.check_output('aws rds stop-db-instance --db-instance-identifier {} --region {}'.format(instanceId, region), shell=True)
         except:
             self.logger.error('Failed to shutdown RDS instance: {} in region: {}'.format(instanceId, region))
 
-    '''Function to leverage AWS CLI to shut down EC2 instances'''
     def shutdownEc2(self, instanceId, region):
 
+        '''Function to leverage AWS CLI to shut down EC2 instances'''
+
         try:
-            return json.loads(subprocess.check_output('aws ec2 stop-instances --instance-ids {} --region {}'.format(instanceId, region), shell=True))
+            subprocess.check_output('aws ec2 stop-instances --instance-ids {} --region {}'.format(instanceId, region), shell=True)
         except:
             self.logger.error('Failed to shutdown EC2 instance: {} in region: {}'.format(instanceId, region))
 
     def suspendAsg(self, asgGroupName, region):
+
+        '''Function to leverage AWS CLI to suspend ASG processes to avoid EC2 instances
+            sitting behind the ASG from being restarted'''
+
         try:
             subprocess.check_output('aws autoscaling suspend-processes --auto-scaling-group-name {} --region {}'.format(asgGroupName, region), shell=True)
         except:
             self.logger.error("Failed to suspend ASG: {} in {}".format(asgGroupName, region))
+
     def terminateStack(self, stackName, region):
+
+        '''This function will be used if stackAction, from the configuration, is set to terminate. All stacks with a
+            valid shutdown tag:value will be deleted.'''
+
         try:
             subprocess.check_output('aws cloudformation delete-stack --stack-name {} --region {}'.format(stackName, region), shell=True)
         except:
@@ -218,7 +235,7 @@ class DevEnvironment(Environment):
    # def run(self):
 
 
-#Main method of shutdown.py
+#Main method of module
 if __name__ == "__main__":
 
 
@@ -227,13 +244,14 @@ if __name__ == "__main__":
     allowedTestEnvironments = ['test']
     allowedDevEnvironments = ['dev', 'development']
 
+    #Instatiaton of configCheck which is used to validate config.json against configSchema.json
     configCheck = configCheck.ConfigCheck()
     shutdown = Shutdown()
     awsSdk = awsSdk.awsManager()
     config = shutdown.config
 
-    #validate if config.json matches required schema
-
+    #validate if config.json matches required schema. configCheck.validateConfig() returns errors with
+    #config.json compared to specified schema.
     config_errors = configCheck.validateConfig()
 
     #if config_errors is non-empty
