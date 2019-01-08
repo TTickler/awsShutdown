@@ -109,7 +109,6 @@ class Shutdown():
 
     def shutdown(self, resource, resourceType, region):
 
-
         '''Sets Management information, used later, to None to avoid referencing variables without it being instantiated'''
         managementAmiRegion = None
         managementInstanceId = None
@@ -129,7 +128,7 @@ class Shutdown():
                     if tag['Key'] == "Name":
                         self.updateNamedInstances(tag['Value'])
 
-                    elif tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
+                    elif tag['Key'] == self.config['shutdownKey'] and tag['Value'] == 'true':
                         self.shutdownEc2(resource["instanceId"], region)
 
             except:
@@ -137,19 +136,21 @@ class Shutdown():
 
         elif resourceType == "STACKS":
             for tag in resource['tags']:
-                if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
+                if tag['Key'] == self.config['shutdownKey'] and tag['Value'] == 'true':
                     if Environment.stackAction == 'terminate':
                         self.terminateStack(resource['Name'], region)
 
         elif resourceType == "ASG":
             for tag in resource['tags']:
-                if tag['Key'] == self.config['shutdownKey'] and tag['Value'] != 'false':
+                if tag['Key'] == self.config['shutdownKey'] and tag['Value'] == 'true':
                         self.suspendAsg(resource['Name'], region)
 
 
 
         elif resourceType == "RDS":
-            self.shutdownRds(resource["Name"], region)
+            for tag in resource['tags']:
+                if tag['Key'] == self.config['shutdownKey'] and tag['Value'] == 'true':
+                    self.shutdownRds(resource["Name"], region)
 
         if managementAmiRegion is not None:
             return {"managementInstanceId": managementInstanceId, "managementAmiRegion": managementAmiRegion}
@@ -226,14 +227,6 @@ class DevEnvironment(Environment):
 
         if managementInfo is not None and self.__config['shutManagementDown'] == True:
             self.__shutdown.shutdownManagement(managementInfo['managementInstanceId'], managementInfo['managementAmiRegion'])
-
-''''''
-#class TestEnvironment():
- #   def __init__(self, config):
-  #      self.test = 5
-
-   # def run(self):
-
 
 #Main method of module
 if __name__ == "__main__":

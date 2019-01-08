@@ -2,12 +2,10 @@
   "focusRegions": ["us-east-2", "us-east-1"],
   "shutManagementDown": true,
   "shutdownKey": "nightShutdown",
-  "scriptHot": "ncct-management",
+  "scriptHost": "ncct-management",
   "environment": "dev",
   "environmentDetails": {
-       "stackAction": "terminate",
-       "suspendAsgTag": "suspendAsg"
-
+       "stackAction": "terminate"
   },
   "logging":{}
 }
